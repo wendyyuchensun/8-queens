@@ -9,6 +9,13 @@ const symmetricModes = [
   [7, 7],
 ]
 
+const rotateModes = [
+  ([x, y]: [number, number]): [number, number] => [x, y],
+  ([x, y]: [number, number]): [number, number] => [7 - y, x],
+  ([x, y]: [number, number]): [number, number] => [7 - y, 7 - x],
+  ([x, y]: [number, number]): [number, number] => [y, 7 - x],
+]
+
 const constructBoardFrom = (record: Record): Array<[number, number]> => {
   const board = new Board()
 
@@ -33,6 +40,12 @@ const getSymmetricalAns = (firstAns: Array<[number, number]>) => {
   })
 }
 
+const getRotateAns = (firstAns: Array<[number, number]>) => {
+  return rotateModes.map(mode => {
+    return firstAns.map(spot => mode(spot))
+  })
+}
+
 const duplicate = (ans1: Array<[number, number]>, ans2): boolean => {
   // no need to check length since all checked ans has len of 8
   return ans1.every(spot1 => ans2.some(spot2 => spot1[0] === spot2[0] && spot1[1] === spot2[1]))
@@ -40,10 +53,17 @@ const duplicate = (ans1: Array<[number, number]>, ans2): boolean => {
 
 const notDuplicateAns = (existingAnsRepo: Array<Array<[number, number]>>, newAns: Array<[number, number]>): boolean => {
   const allSymAns = getSymmetricalAns(newAns)
+  const allRotateAns = getRotateAns(newAns)
 
   for (const symAns of allSymAns) {
     for (const existingAns of existingAnsRepo) {
       if (duplicate(existingAns, symAns)) return false
+    }
+  }
+
+  for (const rotateAns of allRotateAns) {
+    for (const existingAns of existingAnsRepo) {
+      if (duplicate(existingAns, rotateAns)) return false
     }
   }
 
