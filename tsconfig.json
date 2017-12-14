@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
+    "lib": [
+      "ES2015"
+    ]
+  },
+  "include": [
+    "./src/*"
+  ]
+}

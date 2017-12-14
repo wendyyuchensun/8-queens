@@ -1,0 +1,17 @@
+{
+  "name": "8-queens",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "compile": "npm run clean && node_modules/.bin/tsc",
+    "start": "npm run compile && node ."
+  },
+  "author": "Wendy Yuchen Sun",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^8.0.57",
+    "typescript": "^2.6.2"
+  }
+}
