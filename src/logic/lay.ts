@@ -1,7 +1,15 @@
+'use strict'
+
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
+
 import Board from './Board'
 import Record from './Record'
 
-const ans = []
+import BoardSet from '../presentation/BoardSet'
+
+const ans: Array<Array<[number, number]>> = []
+
 const symmetricModes = [
   [0, 0],
   [7, 0],
@@ -46,9 +54,9 @@ const getRotateAns = (firstAns: Array<[number, number]>) => {
   })
 }
 
-const duplicate = (ans1: Array<[number, number]>, ans2): boolean => {
+const duplicate = (ans1: Array<[number, number]>, ans2: number[][]): boolean => {
   // no need to check length since all checked ans has len of 8
-  return ans1.every(spot1 => ans2.some(spot2 => spot1[0] === spot2[0] && spot1[1] === spot2[1]))
+  return ans1.every(spot1 => ans2.some((spot2: [number, number]) => spot1[0] === spot2[0] && spot1[1] === spot2[1]))
 }
 
 const notDuplicateAns = (existingAnsRepo: Array<Array<[number, number]>>, newAns: Array<[number, number]>): boolean => {
@@ -62,8 +70,12 @@ const notDuplicateAns = (existingAnsRepo: Array<Array<[number, number]>>, newAns
   }
 
   for (const rotateAns of allRotateAns) {
-    for (const existingAns of existingAnsRepo) {
-      if (duplicate(existingAns, rotateAns)) return false
+    const allRotateSymAns = getSymmetricalAns(rotateAns)
+
+    for (const rotateSymAns of allRotateSymAns) {
+      for (const existingAns of existingAnsRepo) {
+        if (duplicate(existingAns, rotateSymAns)) return false
+      }
     }
   }
 
@@ -82,6 +94,20 @@ const lay = (spot: any): void => {
       ans.push(allTakenSpots)
       console.log(ans.length)
       console.log(allTakenSpots)
+
+      const root = document.querySelector('.root')
+      const boardSet = React.createElement(BoardSet, { occupiedSpots: allTakenSpots, key: `set-${ans.length}` })
+      const boardNode = document.createElement('DIV')
+      const textNode = document.createTextNode('Hi')
+      boardNode.appendChild(textNode)
+
+      if (root.childNodes) {
+        root.insertBefore(boardNode, root.childNodes[0])
+      } else {
+        root.appendChild(boardNode)
+      }
+
+      ReactDOM.render(boardSet, boardNode)
     }
   } else {
     leftSpots.forEach(leftSpot => {
