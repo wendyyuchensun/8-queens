@@ -65,20 +65,43 @@ const topRulerNode = [<div className="coord" key="empty"></div>].concat(renderRu
 
 const rulerNode = renderRulerNodes()
 
+const coordList = (coord: [number, number], indx: number) => {
+  return (
+    <div className="coord-tip" key={ indx } data-x={ coord[0] } data-y={ coord[1] }>
+      { coord.join(', ') }
+    </div>
+  )
+}
+
+let num = 0;
+
 export default class BoardSet extends React.Component {
   public props: any
 
   public render() {
     const board = React.createElement(Board, { occupiedSpots: this.props.occupiedSpots })
+    const coordNodes = this.props.occupiedSpots.map((spot: [number, number], indx: number) => coordList(spot, indx))
 
     if (this.props.pending) return board
 
+    num++;
+
     return (
-      <div className="board-set">
-        <div className="top-ruler">{ topRulerNode }</div>
-        <div className="bottom-ruler-board">
-          <div className="left-ruler">{ rulerNode }</div>
-          { board }
+      <div className="board-set-container">
+        <div className="ans-no">
+           <span>{ num }</span>
+        </div>
+        <div className="board-set">
+          <div className="top-ruler">{ topRulerNode }</div>
+          <div className="bottom-ruler-board">
+            <div className="left-ruler">{ rulerNode }</div>
+            { board }
+          </div>
+        </div>
+        <div className="coord-list">
+          <div className="coord-list-inner">
+            { coordNodes }
+          </div>
         </div>
       </div>
     )
