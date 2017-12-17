@@ -1,120 +1,122 @@
-'use strict'
+const allIndx = [0, 1, 2, 3, 4, 5, 6, 7]
 
-import * as React from 'react'
-import * as ReactDOM from 'react-dom'
-
-import Board from './Board'
-import Record from './Record'
-
-import BoardSet from '../presentation/BoardSet'
-
-const ans: Array<Array<[number, number]>> = []
-
-const symmetricModes = [
-  [0, 0],
-  [7, 0],
-  [0, 7],
-  [7, 7],
-]
-
-const rotateModes = [
-  ([x, y]: [number, number]): [number, number] => [x, y],
-  ([x, y]: [number, number]): [number, number] => [7 - y, x],
-  ([x, y]: [number, number]): [number, number] => [7 - y, 7 - x],
-  ([x, y]: [number, number]): [number, number] => [y, 7 - x],
-]
-
-const constructBoardFrom = (record: Record): Array<[number, number]> => {
-  const board = new Board()
-
-  if (record.current) {
-    let currentRecord = record
-    while (currentRecord && currentRecord.current) {
-      board.removeAllOccupied(currentRecord.current)
-      currentRecord = currentRecord.previous
-    }
-  }
-
-  return board.board
+const remove = (a: number[], b: number[]) => {
+  return a.filter(aIndx => b.indexOf(aIndx) === -1)
 }
 
-const getSymmetricalAns = (firstAns: Array<[number, number]>) => {
-  return symmetricModes.map(mode => {
-    return firstAns.map(spot => {
-      const x = mode[0] ? (mode[0] - spot[0]) : spot[0]
-      const y = mode[1] ? (mode[1] - spot[1]) : spot[1]
-      return [x, y]
-    })
+const sols = []
+
+const symMode1 = (layedIndxs: number[]): number[] => layedIndxs
+
+const symMode2 = (layedIndxs: number[]): number[] => {
+  return layedIndxs.map(indx => 7 - indx)
+}
+
+const symMode3 = (layedIndx: number[]): number[] => {
+  const newLayedIndxs = new Array(8)
+  for (let i = 0; i < 8; i++) {
+    newLayedIndxs[7 - i] = i
+  }
+  return newLayedIndxs
+}
+
+const symMode4 = (layedIndx: number[]): number[] => {
+  const newLayedIndxs = new Array(8)
+  for (let i = 0; i < 8; i++) {
+    newLayedIndxs[7 - layedIndx[i]] = i
+  }
+  return newLayedIndxs.map(indx => 7 - indx)
+}
+
+const symModes = [symMode1, symMode2, symMode3, symMode4]
+
+const rotateMode1 = (layedIndxs: number[]): number[] => layedIndxs
+
+const rotateMode2 = (layedIndxs: number[]): number[] => {
+  const newLayedIndxs = new Array(8)
+  for (let i = 0; i < 8; i++) newLayedIndxs[7 - layedIndxs[i]] = i
+  return newLayedIndxs
+}
+
+const rotateMode3 = (layedIndxs: number[]): number[] => {
+  const newLayedIndxs = new Array(8)
+  for (let i = 0; i < 8; i++) newLayedIndxs[layedIndxs[7 - i]] = 7 - i
+  return newLayedIndxs
+}
+
+const rotateMode4 = (layedIndxs: number[]): number[] => {
+  const newLayedIndxs = new Array(8)
+  for (let i = 0; i < 8; i++) newLayedIndxs[layedIndxs[i]] = 7 - i
+  return newLayedIndxs
+}
+
+const rotateModes = [rotateMode1, rotateMode2, rotateMode3, rotateMode4]
+
+const testDuplicate = (layedIndxs: number[]): boolean => {
+  const allDuplicates = rotateModes
+    .map(mode => mode(layedIndxs))
+    .reduce((allDuplicatesAns: number[][], indxs) => {
+      symModes.forEach(symMode => allDuplicatesAns.push(symMode(indxs)))
+      return allDuplicatesAns
+    }, [])
+
+  let duplicated = false
+
+  allDuplicates.forEach(duplicate => {
+    if (sols.some(sol => sol.every((s, i) => s === duplicate[i]))) {
+      duplicated = true
+    }
   })
+
+  return duplicated
 }
 
-const getRotateAns = (firstAns: Array<[number, number]>) => {
-  return rotateModes.map(mode => {
-    return firstAns.map(spot => mode(spot))
-  })
+const cross = (indx: number, col: number, layCol: number): number[] => {
+  const offset = layCol - col
+  return [indx + offset, indx - offset]
 }
 
-const duplicate = (ans1: Array<[number, number]>, ans2: number[][]): boolean => {
-  // no need to check length since all checked ans has len of 8
-  return ans1.every(spot1 => ans2.some((spot2: [number, number]) => spot1[0] === spot2[0] && spot1[1] === spot2[1]))
-}
-
-const notDuplicateAns = (existingAnsRepo: Array<Array<[number, number]>>, newAns: Array<[number, number]>): boolean => {
-  const allSymAns = getSymmetricalAns(newAns)
-  const allRotateAns = getRotateAns(newAns)
-
-  for (const symAns of allSymAns) {
-    for (const existingAns of existingAnsRepo) {
-      if (duplicate(existingAns, symAns)) return false
-    }
+const allCross = (layedIndxs: number[]): number[] => {
+  let allCrossIndxs = []
+  for (let i = 0; i < layedIndxs.length; i++) {
+    const crossIndxs = cross(layedIndxs[i], i, layedIndxs.length)
+    allCrossIndxs = allCrossIndxs.concat(crossIndxs)
   }
-
-  for (const rotateAns of allRotateAns) {
-    const allRotateSymAns = getSymmetricalAns(rotateAns)
-
-    for (const rotateSymAns of allRotateSymAns) {
-      for (const existingAns of existingAnsRepo) {
-        if (duplicate(existingAns, rotateSymAns)) return false
-      }
-    }
-  }
-
-  return true
+  return allCrossIndxs.filter(indx => indx < 8 && indx > -1)
 }
 
-const lay = (spot: any): void => {
-  const leftSpots = constructBoardFrom(spot)
+let num = 0;
 
-  if (leftSpots.length === 1) {
-    const newRecord = new Record(leftSpots[0], spot)
-    const allTakenSpots = newRecord.getAllTakenSpots()
+const place = (...layedIndxs: number[]): void => {
+  const lastLayedIndx = layedIndxs[layedIndxs.length - 1]
+  const leftIndxs = remove(allIndx, layedIndxs)
+  const usableIndxs = remove(leftIndxs, allCross(layedIndxs))
 
-    // denote answer
-    if (allTakenSpots.length === 8 && notDuplicateAns(ans, allTakenSpots)) {
-      ans.push(allTakenSpots)
-      console.log(ans.length)
-      console.log(allTakenSpots)
-
-      const root = document.querySelector('.root')
-      const boardSet = React.createElement(BoardSet, { occupiedSpots: allTakenSpots, key: `set-${ans.length}` })
-      const boardNode = document.createElement('DIV')
-      const textNode = document.createTextNode('Hi')
-      boardNode.appendChild(textNode)
-
-      if (root.childNodes) {
-        root.insertBefore(boardNode, root.childNodes[0])
-      } else {
-        root.appendChild(boardNode)
-      }
-
-      ReactDOM.render(boardSet, boardNode)
+  if (usableIndxs.length) {
+    for (const usableIndx of usableIndxs) {
+      place(...layedIndxs, usableIndx)
     }
   } else {
-    leftSpots.forEach(leftSpot => {
-      const newRecord = new Record(leftSpot, spot)
-      lay(newRecord)
-    })
+    if (layedIndxs.length === 8 && !testDuplicate(layedIndxs)) {
+      num++
+      console.log(layedIndxs)
+      sols.push(layedIndxs)
+    }
   }
 }
 
-export default lay
+const start: number = Date.now()
+
+place(0)
+place(1)
+place(2)
+place(3)
+place(4)
+place(5)
+place(6)
+place(7)
+
+const end: number = Date.now()
+
+console.log(num)
+console.log((end - start) / 1000)
