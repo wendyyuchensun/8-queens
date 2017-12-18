@@ -1,10 +1,15 @@
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
+
+import BoardSet from '../presentation/BoardSet'
+
 const allIndx = [0, 1, 2, 3, 4, 5, 6, 7]
 
 const remove = (a: number[], b: number[]) => {
   return a.filter(aIndx => b.indexOf(aIndx) === -1)
 }
 
-const sols = []
+const sols: number[][] = []
 
 const symMode1 = (layedIndxs: number[]): number[] => layedIndxs
 
@@ -77,7 +82,7 @@ const cross = (indx: number, col: number, layCol: number): number[] => {
 }
 
 const allCross = (layedIndxs: number[]): number[] => {
-  let allCrossIndxs = []
+  let allCrossIndxs: number[] = []
   for (let i = 0; i < layedIndxs.length; i++) {
     const crossIndxs = cross(layedIndxs[i], i, layedIndxs.length)
     allCrossIndxs = allCrossIndxs.concat(crossIndxs)
@@ -101,6 +106,15 @@ const place = (...layedIndxs: number[]): void => {
       num++
       console.log(layedIndxs)
       sols.push(layedIndxs)
+
+      const allTakenSpots = layedIndxs.map((row, col) => [col, row])
+
+      const root = document.querySelector('.root')
+      const boardSet = React.createElement(BoardSet, { occupiedSpots: allTakenSpots })
+      const boardNode = document.createElement('DIV')
+      root.appendChild(boardNode)
+
+      ReactDOM.render(boardSet, boardNode)
     }
   }
 }

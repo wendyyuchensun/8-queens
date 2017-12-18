@@ -1,2 +1,2 @@
 import './style/style.scss'
-// import './logic'
+import './logic/lay'
