@@ -1,7 +1,7 @@
 import getAvails from './getAvails'
 import tally from './tally'
 
-const place = (...prevs): void => {
+const place = (...prevs: number[]): void => {
   const avails = getAvails(prevs)
 
   // 如果下一行還有可放的空位，繼續試
