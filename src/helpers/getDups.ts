@@ -1,11 +1,15 @@
 import rotateModes from './rotateModes'
 import symModes from './symModes'
 
-const getDups = (sol: number): number[][] => {
-  const dups = []
-  const syms = symModes.map(mode => mode(sol))
+type Mode = (indxs: number[]) => number[]
 
-  syms.forEach(sym => dups = dups.concat(rotateModes.map(mode => mode(sym))))
+const getDups = (sol: number): Array<number[] | null> => {
+  const dups: Array<number[] | null> = []
+  const syms = symModes.map((mode: Mode): number[] => mode(sol))
+
+  syms.forEach((sym: number[]): void => {
+    dups = dups.concat(rotateModes.map((mode: Mode): number[] => mode(sym)))
+  })
 
   return dups
 }
