@@ -1,7 +1,7 @@
 // 扣掉 prev 的對角線
 // 與所有 prevs
 
-const getUnavails = (prevs: number[]): Set => {
+const getUnavails = (prevs: number[]): Set<number> => {
   const prevLen = prevs.length
 
   const tmpSet: number[] =
@@ -9,7 +9,7 @@ const getUnavails = (prevs: number[]): Set => {
       const offset = prevLen - indx
       return [prev + offset, prev - offset]
     }).reduce((acc: number[], pair: number[]): number[] => acc.concat(pair), [])
-      .filter((indx: number): Array<number | null> => indx < 8 && indx > -1) // 對角線
+      .filter((indx: number): boolean => indx < 8 && indx > -1) // 對角線
       .concat(prevs) // prevs
 
   return new Set(tmpSet)

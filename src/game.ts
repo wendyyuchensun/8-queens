@@ -2,7 +2,7 @@ import place from './place'
 
 type tallyCb = (sol: number[]) => any
 
-const game = (cb: tallyCb): void => {
+const game = (cb?: tallyCb): void => {
   const begin = (new Date()).getTime()
 
   place(cb)

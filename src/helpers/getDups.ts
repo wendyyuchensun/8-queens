@@ -3,8 +3,8 @@ import symModes from './symModes'
 
 type Mode = (indxs: number[]) => number[]
 
-const getDups = (sol: number): Array<number[] | null> => {
-  const dups: Array<number[] | null> = []
+const getDups = (sol: number[]): Array<number[] | null> => {
+  let dups: Array<number[] | null> = []
   const syms = symModes.map((mode: Mode): number[] => mode(sol))
 
   syms.forEach((sym: number[]): void => {
