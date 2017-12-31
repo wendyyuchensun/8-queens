@@ -3,7 +3,9 @@ import getDups from './helpers/getDups'
 
 const sols: Array<number[] | null> = []
 
-const tally = (newSol: number[]): void => {
+type tallyCb = (sol: number[]) => any
+
+const tally = (newSol: number[], cb: tallyCb | undefined): void => {
   // 製造各種對稱旋轉解，並測試重複
   const dups = getDups(newSol)
   const isDuplicated = sols.some((sol: number[]): boolean => {
@@ -16,6 +18,8 @@ const tally = (newSol: number[]): void => {
   // tslint:disable no-console
   console.log(`${sols.length}.`)
   console.log(newSol)
+
+  if (cb) cb(newSol)
 }
 
 export default tally

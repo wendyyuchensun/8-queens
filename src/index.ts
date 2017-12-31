@@ -1,9 +1,3 @@
-import place from './place'
+import game from './game'
 
-const begin = (new Date()).getTime()
-
-place()
-
-const end = (new Date()).getTime()
-// tslint:disable-next-line no-console
-console.log(`Time used: approx. ${((end - begin) / 1000).toFixed(2)} sec`)
+game()
