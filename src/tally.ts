@@ -15,10 +15,12 @@ const tally = (newSol: number[], cb: tallyCb | undefined): void => {
   if (isDuplicated) return
   sols.push(newSol)
 
-  console.log(`${sols.length}.`)
-  console.log(newSol)
-
-  if (cb) cb(newSol)
+  if (cb) {
+    cb(newSol)
+  } else {
+    console.log(`${sols.length}.`)
+    console.log(newSol)
+  }
 }
 
 export default tally
