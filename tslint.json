@@ -8,7 +8,8 @@
       "arrow-parens": false,
       "quotemark": [true, "single", "jsx-double"],
       "semicolon": false,
-      "curly": false
+      "curly": false,
+      "no-console": false
     },
     "rulesDirectory": []
 }

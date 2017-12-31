@@ -15,7 +15,6 @@ const tally = (newSol: number[], cb: tallyCb | undefined): void => {
   if (isDuplicated) return
   sols.push(newSol)
 
-  // tslint:disable no-console
   console.log(`${sols.length}.`)
   console.log(newSol)
 
